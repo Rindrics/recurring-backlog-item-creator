@@ -40,26 +40,26 @@ func TestIssue_IsCreationMonth(t *testing.T) {
 	}{
 		{
 			name:           "Matches first month",
-			creationMonths: []Month{1, 2, 3},
-			thisMonth:      1,
+			creationMonths: []Month{January, February, March},
+			thisMonth:      January,
 			expect:         true,
 		},
 		{
 			name:           "Matches second month",
-			creationMonths: []Month{1, 2, 3},
-			thisMonth:      2,
+			creationMonths: []Month{January, February, March},
+			thisMonth:      February,
 			expect:         true,
 		},
 		{
 			name:           "Does not match",
-			creationMonths: []Month{1, 2, 3},
-			thisMonth:      4,
+			creationMonths: []Month{January, February, March},
+			thisMonth:      April,
 			expect:         false,
 		},
 		{
 			name:           "Empty creation months",
 			creationMonths: []Month{},
-			thisMonth:      3,
+			thisMonth:      March,
 			expect:         false,
 		},
 	}

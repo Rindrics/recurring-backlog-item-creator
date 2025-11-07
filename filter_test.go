@@ -15,33 +15,25 @@ func TestGetIssuesToCreate(t *testing.T) {
 	}
 	issue1 := Issue{
 		Name:           "Issue 1",
-		CreationMonths: []Month{1},
-		ProjectID:      nil, // 未設定
-		TargetRepo:     nil, // 未設定
+		CreationMonths: []Month{January},
 	}
 	issue2 := Issue{
 		Name:           "Issue 2",
-		CreationMonths: []Month{2},
-		ProjectID:      nil,
-		TargetRepo:     nil,
+		CreationMonths: []Month{February},
 	}
 	issue1_3 := Issue{
 		Name:           "Issue 1_3",
-		CreationMonths: []Month{1, 3},
-		ProjectID:      nil,
-		TargetRepo:     nil,
+		CreationMonths: []Month{January, March},
 	}
 	issue2_4 := Issue{
 		Name:           "Issue 2_4",
-		CreationMonths: []Month{2, 4},
-		ProjectID:      nil,
-		TargetRepo:     nil,
+		CreationMonths: []Month{February, April},
 	}
 	otherProjectID := "other_project_id"
 	otherRepo := "other/repo"
 	issue_project_repo := Issue{
 		Name:           "Issue project_repo",
-		CreationMonths: []Month{1},
+		CreationMonths: []Month{January},
 		ProjectID:      &otherProjectID,
 		TargetRepo:     &otherRepo,
 	}
@@ -58,7 +50,7 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Defaults: defaults,
 				Issues:   []Issue{},
 			},
-			month:          Month(1),
+			month:          January,
 			issuesToCreate: IssuesToCreate{},
 		},
 		{
@@ -67,7 +59,7 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Defaults: defaults,
 				Issues:   []Issue{issue1},
 			},
-			month: Month(1),
+			month: January,
 			issuesToCreate: IssuesToCreate{
 				Issues: []IssueToCreate{
 					{
@@ -84,7 +76,7 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Defaults: defaults,
 				Issues:   []Issue{issue1, issue1_3, issue2_4},
 			},
-			month: Month(1),
+			month: January,
 			issuesToCreate: IssuesToCreate{
 				Issues: []IssueToCreate{
 					{
@@ -106,7 +98,7 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Defaults: defaults,
 				Issues:   []Issue{issue2, issue1_3, issue2_4},
 			},
-			month: Month(2),
+			month: February,
 			issuesToCreate: IssuesToCreate{
 				Issues: []IssueToCreate{
 					{
@@ -128,7 +120,7 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Defaults: defaults,
 				Issues:   []Issue{issue_project_repo},
 			},
-			month: Month(1),
+			month: January,
 			issuesToCreate: IssuesToCreate{
 				Issues: []IssueToCreate{
 					{
