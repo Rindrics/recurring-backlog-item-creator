@@ -35,15 +35,35 @@ const (
 type Issue struct {
 	Name           string  `yaml:"name"`
 	CreationMonths []Month `yaml:"creation_months"`
-	ProjectID      string  `yaml:"issue.project_id"`
-	TargetRepo     string  `yaml:"issue.target_repo"`
+	ProjectID      *string `yaml:"project_id,omitempty"`
+	TargetRepo     *string `yaml:"target_repo,omitempty"`
 }
 
 type IssueToCreate struct {
 	Issue      Issue
 	Fields     map[string]string
-	ProjectID  string
-	TargetRepo string
+	ProjectID  *string
+	TargetRepo *string
+}
+
+func NewIssueToCreate(issue Issue, defaults Defaults) IssueToCreate {
+	issueToCreate := IssueToCreate{Issue: issue}
+
+	if issue.ProjectID != nil {
+		issueToCreate.ProjectID = issue.ProjectID
+	} else {
+		projectID := defaults.ProjectID
+		issueToCreate.ProjectID = &projectID
+	}
+
+	if issue.TargetRepo != nil {
+		issueToCreate.TargetRepo = issue.TargetRepo
+	} else {
+		targetRepo := defaults.TargetRepo
+		issueToCreate.TargetRepo = &targetRepo
+	}
+
+	return issueToCreate
 }
 
 type IssuesToCreate struct {

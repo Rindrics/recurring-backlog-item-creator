@@ -9,27 +9,41 @@ func TestGetIssuesToCreate(t *testing.T) {
 		ProjectID:  "default_project_id",
 		TargetRepo: "default/repo",
 	}
+
+	stringPtr := func(s string) *string {
+		return &s
+	}
 	issue1 := Issue{
 		Name:           "Issue 1",
 		CreationMonths: []Month{1},
+		ProjectID:      nil, // 未設定
+		TargetRepo:     nil, // 未設定
 	}
 	issue2 := Issue{
 		Name:           "Issue 2",
 		CreationMonths: []Month{2},
+		ProjectID:      nil,
+		TargetRepo:     nil,
 	}
 	issue1_3 := Issue{
 		Name:           "Issue 1_3",
 		CreationMonths: []Month{1, 3},
+		ProjectID:      nil,
+		TargetRepo:     nil,
 	}
 	issue2_4 := Issue{
 		Name:           "Issue 2_4",
 		CreationMonths: []Month{2, 4},
+		ProjectID:      nil,
+		TargetRepo:     nil,
 	}
+	otherProjectID := "other_project_id"
+	otherRepo := "other/repo"
 	issue_project_repo := Issue{
 		Name:           "Issue project_repo",
 		CreationMonths: []Month{1},
-		ProjectID:      "other_project_id",
-		TargetRepo:     "other/repo",
+		ProjectID:      &otherProjectID,
+		TargetRepo:     &otherRepo,
 	}
 
 	cases := []struct {
@@ -58,8 +72,8 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Issues: []IssueToCreate{
 					{
 						Issue:      issue1,
-						ProjectID:  "default_project_id",
-						TargetRepo: "default/repo",
+						ProjectID:  stringPtr("default_project_id"),
+						TargetRepo: stringPtr("default/repo"),
 					},
 				},
 			},
@@ -75,13 +89,13 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Issues: []IssueToCreate{
 					{
 						Issue:      issue1,
-						ProjectID:  "default_project_id",
-						TargetRepo: "default/repo",
+						ProjectID:  stringPtr("default_project_id"),
+						TargetRepo: stringPtr("default/repo"),
 					},
 					{
 						Issue:      issue1_3,
-						ProjectID:  "default_project_id",
-						TargetRepo: "default/repo",
+						ProjectID:  stringPtr("default_project_id"),
+						TargetRepo: stringPtr("default/repo"),
 					},
 				},
 			},
@@ -97,13 +111,13 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Issues: []IssueToCreate{
 					{
 						Issue:      issue2,
-						ProjectID:  "default_project_id",
-						TargetRepo: "default/repo",
+						ProjectID:  stringPtr("default_project_id"),
+						TargetRepo: stringPtr("default/repo"),
 					},
 					{
 						Issue:      issue2_4,
-						ProjectID:  "default_project_id",
-						TargetRepo: "default/repo",
+						ProjectID:  stringPtr("default_project_id"),
+						TargetRepo: stringPtr("default/repo"),
 					},
 				},
 			},
@@ -119,8 +133,8 @@ func TestGetIssuesToCreate(t *testing.T) {
 				Issues: []IssueToCreate{
 					{
 						Issue:      issue_project_repo,
-						ProjectID:  "other_project_id",
-						TargetRepo: "other/repo",
+						ProjectID:  &otherProjectID,
+						TargetRepo: &otherRepo,
 					},
 				},
 			},
