@@ -56,6 +56,8 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 		// If project name is empty, use project ID as fallback
 		Debugf("Project name is empty for %s, using project ID as fallback", projectID)
 		projectName = projectID
+	} else {
+		Debugf("Successfully retrieved project name: %s for project ID: %s", projectName, projectID)
 	}
 
 	// Get project fields for validation
@@ -72,17 +74,13 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 	}
 
 	// Validate fields
-	projectDisplayName := projectName
-	if projectDisplayName != projectID {
+	// Format project display name: "Name (ID)" if name is different from ID, otherwise just ID
+	projectDisplayName := projectID
+	if projectName != "" && projectName != projectID {
 		projectDisplayName = fmt.Sprintf("%s (%s)", projectName, projectID)
 	}
+	Debugf("Using project display name: %s", projectDisplayName)
 	if err := ValidateIssueFields(issue, fieldMap, projectDisplayName); err != nil {
-		// Log available fields for debugging
-		availableFields := make([]string, 0, len(fieldMap))
-		for name := range fieldMap {
-			availableFields = append(availableFields, name)
-		}
-		Debugf("Available fields in project '%s': %v", projectDisplayName, availableFields)
 		return err
 	}
 
@@ -114,7 +112,12 @@ func ValidateIssueFields(issue Issue, fieldMap map[string]ProjectField, projectN
 		Debugf("Validating field '%s' with value '%s'", fieldName, fieldValue)
 		field, exists := fieldMap[fieldName]
 		if !exists {
-			return fmt.Errorf("field '%s' does not exist in project '%s'", fieldName, projectName)
+			// Get list of available field names
+			availableFields := make([]string, 0, len(fieldMap))
+			for name := range fieldMap {
+				availableFields = append(availableFields, name)
+			}
+			return fmt.Errorf("field '%s' does not exist in project '%s'. Available fields: %v", fieldName, projectName, availableFields)
 		}
 
 		// For single-select fields, validate that the option exists
