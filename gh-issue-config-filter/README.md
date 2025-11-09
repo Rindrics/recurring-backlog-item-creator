@@ -46,7 +46,7 @@ gh-issue-config-filter --month <1-12> [--config <config-file>]
 
 ```bash
 # Get issues to create in January
-gh-issue-config-filter --month 1 --config config-template.yml
+gh-issue-config-filter --month 1 --config ../config-template.yml
 
 # Output:
 [
@@ -66,7 +66,7 @@ gh-issue-config-filter --month 1 --config config-template.yml
 
 ```bash
 # Two issues are returned for March
-gh-issue-config-filter --month 3 --config config-template.yml
+gh-issue-config-filter --month 3 --config ../config-template.yml
 
 # Output:
 [
@@ -98,4 +98,4 @@ gh-issue-config-filter --month 3 --config config-template.yml
 
 ## Configuration File Format
 
-See [`config-template.yml`](./config-template.yml) for an example configuration file.
+See [`config-template.yml`](../config-template.yml) for an example configuration file.
