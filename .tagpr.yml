@@ -1,0 +1,12 @@
+version: 1
+
+release:
+  labels:
+    - release
+  versioning:
+    type: semver
+  changelog:
+    enabled: true
+    format: markdown
+  draft: false
+  prerelease: false
