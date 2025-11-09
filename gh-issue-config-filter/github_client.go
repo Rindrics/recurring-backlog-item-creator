@@ -191,6 +191,10 @@ func (g *githubClient) GetProjectName(ctx context.Context, projectID string) (st
 		return "", fmt.Errorf("failed to execute GraphQL query: %w", err)
 	}
 
+	if result.Data.Node.Title == "" {
+		return "", fmt.Errorf("project name is empty for project ID %s", projectID)
+	}
+
 	return result.Data.Node.Title, nil
 }
 
