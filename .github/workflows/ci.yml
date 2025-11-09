@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+          cache-dependency-path: './gh-issue-config-filter/go.sum'
+
+      - name: Run tests
+        working-directory: ./gh-issue-config-filter
+        run: make test
+
+      - name: Run linters
+        working-directory: ./gh-issue-config-filter
+        run: make lint
+
