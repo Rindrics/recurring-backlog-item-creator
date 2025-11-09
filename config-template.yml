@@ -5,14 +5,14 @@ issues:
   - name: "Wash My Cat"
     template_file: ".github/ISSUE_TEMPLATE/wash_my_cat.md"
     creation_months: [1, 3, 5, 7, 9]
-    title_prefix: "[test]"
+    title_prefix: "[test]"  # joined with issue name WITH a single space
     title_suffix: "- {{YearMonth}}"
     fields:
       Priority: "P1"
       Status: "Ready"
   - name: "Buy New Shoes"
     template_file: ".github/ISSUE_TEMPLATE/buy_shoes.md"
-    title_prefix: "[{{Year}}]"
+    title_prefix: "[{{Year}}] "  # joined with issue name WITHOUT additional space
     title_suffix: "- ({{Month}})"
     creation_months: [3, 11, 12]
     fields:

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 	"time"
 )
@@ -103,12 +104,22 @@ func outputJSON(ctx context.Context, issuesToCreate IssuesToCreate, defaults Def
 		}
 
 		// Build title: "{prefix} {name} {suffix}"
+		// Add space between prefix and name only if prefix doesn't end with space
+		// Add space between name and suffix only if suffix doesn't start with space
 		title := issue.Name
 		if expandedPrefix != "" {
-			title = fmt.Sprintf("%s %s", expandedPrefix, title)
+			if strings.HasSuffix(expandedPrefix, " ") {
+				title = expandedPrefix + title
+			} else {
+				title = expandedPrefix + " " + title
+			}
 		}
 		if expandedSuffix != "" {
-			title = fmt.Sprintf("%s %s", title, expandedSuffix)
+			if strings.HasPrefix(expandedSuffix, " ") {
+				title = title + expandedSuffix
+			} else {
+				title = title + " " + expandedSuffix
+			}
 		}
 
 		item := IssueOutput{

@@ -2,6 +2,7 @@ package main
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 )
@@ -251,6 +252,30 @@ func TestBuildTitleWithPrefixAndSuffix(t *testing.T) {
 			expect:      "[" + expectedYearMonth + "] Test Issue",
 			expectError: false,
 		},
+		{
+			name:        "prefix ending with space",
+			issueName:   "Test Issue",
+			titlePrefix: stringPtr("[PREFIX] "),
+			titleSuffix: nil,
+			expect:      "[PREFIX] Test Issue",
+			expectError: false,
+		},
+		{
+			name:        "suffix starting with space",
+			issueName:   "Test Issue",
+			titlePrefix: nil,
+			titleSuffix: stringPtr(" - suffix"),
+			expect:      "Test Issue - suffix",
+			expectError: false,
+		},
+		{
+			name:        "prefix ending with space and suffix starting with space",
+			issueName:   "Test Issue",
+			titlePrefix: stringPtr("[PREFIX] "),
+			titleSuffix: stringPtr(" - suffix"),
+			expect:      "[PREFIX] Test Issue - suffix",
+			expectError: false,
+		},
 	}
 
 	for _, tt := range cases {
@@ -275,12 +300,22 @@ func TestBuildTitleWithPrefixAndSuffix(t *testing.T) {
 			}
 
 			// Build title: "{prefix} {name} {suffix}"
+			// Add space between prefix and name only if prefix doesn't end with space
+			// Add space between name and suffix only if suffix doesn't start with space
 			title := tt.issueName
 			if expandedPrefix != "" {
-				title = expandedPrefix + " " + title
+				if strings.HasSuffix(expandedPrefix, " ") {
+					title = expandedPrefix + title
+				} else {
+					title = expandedPrefix + " " + title
+				}
 			}
 			if expandedSuffix != "" {
-				title = title + " " + expandedSuffix
+				if strings.HasPrefix(expandedSuffix, " ") {
+					title = title + expandedSuffix
+				} else {
+					title = title + " " + expandedSuffix
+				}
 			}
 
 			if title != tt.expect {
