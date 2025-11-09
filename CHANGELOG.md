@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.1.2](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v0.1.1...v0.1.2) - 2025-11-09
+- Update `README.md` by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/17
+
 ## [v0.1.1](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v0.1.0...v0.1.1) - 2025-11-09
 - Add workflow for testing by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/9
 - Fix workflow permission by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/11
