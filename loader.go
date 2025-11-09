@@ -2,14 +2,13 @@ package main
 
 import (
 	"errors"
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
 func LoadConfig(configFile string) (Config, error) {
-	log.Println("loading config file: ", configFile)
+	Debug("loading config file: ", configFile)
 
 	var config = Config{}
 
@@ -23,17 +22,14 @@ func LoadConfig(configFile string) (Config, error) {
 		return config, err
 	}
 
-	if len(config.Issues) == 0 {
-		return config, nil
-	}
+	Debug("loaded config file: ", &config)
 
-	log.Println("loaded config file: ", &config)
 	return config, nil
 }
 
 func ParseMonth(digit int) (Month, error) {
 	if digit < 1 || digit > 12 {
-		return 0, errors.New("invalid month")
+		return 0, errors.New("month must be between 1 and 12")
 	}
 	return Month(digit), nil
 }
