@@ -42,7 +42,7 @@ If you want to use a default project ID for all issues, set the following reposi
 
 - `PROJECT_ID`: Your GitHub Project ID (can be overridden per issue in config)
 
-> [NOTE]
+> [!NOTE]
 > You don't need to set IDs of project item fields (like Story Points, Status) manually
 > because they are automatically detected from field names in your configuration file
 
@@ -73,7 +73,7 @@ For organization-level projects, you have two options:
      - `project` (to add issue to project)
    - Add it as a repository secret and use it in your workflow
 
-> [NOTE]
+> [!NOTE]
 > `GITHUB_TOKEN` cannot access organization-level projects because it only has repository scope.
 
 #### For User Projects
