@@ -51,7 +51,7 @@ If you want to use a default project ID for all issues, set the following reposi
 The GitHub token (`GITHUB_TOKEN` or a custom token) requires the following permissions:
 
 - **`issues: write`** - Required to create issues in the repository
-- **`projects: write`** - Required to add issues to projects and update project fields
+- **`repository-projects: write`** - Required to add issues to projects and update project fields (includes read access)
 - **`contents: read`** - Required to read the configuration file from the repository
 
 When using `GITHUB_TOKEN` in GitHub Actions, these permissions must be explicitly granted in your workflow file:
@@ -60,7 +60,7 @@ When using `GITHUB_TOKEN` in GitHub Actions, these permissions must be explicitl
 permissions:
   contents: read
   issues: write
-  projects: write
+  repository-projects: write
 ```
 
 > [NOTE]
