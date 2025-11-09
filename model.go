@@ -33,18 +33,16 @@ const (
 )
 
 type Issue struct {
-	Name           string  `yaml:"name"`
-	CreationMonths []Month `yaml:"creation_months"`
-	ProjectID      *string `yaml:"project_id,omitempty"`
-	TargetRepo     *string `yaml:"target_repo,omitempty"`
+	Name           string            `yaml:"name"`
+	CreationMonths []Month           `yaml:"creation_months"`
+	TemplateFile   *string           `yaml:"template_file"`
+	TitleSuffix    *string           `yaml:"title_suffix,omitempty"`
+	Fields         map[string]string `yaml:"fields"`
+	ProjectID      *string           `yaml:"project_id,omitempty"`
+	TargetRepo     *string           `yaml:"target_repo,omitempty"`
 }
 
-type IssueToCreate struct {
-	Issue      Issue
-	Fields     map[string]string
-	ProjectID  *string
-	TargetRepo *string
-}
+type IssueToCreate = Issue
 
 func NewIssueToCreate(issue Issue, defaults Defaults) IssueToCreate {
 	issueToCreate := issue
