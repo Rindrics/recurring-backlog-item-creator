@@ -1,14 +1,6 @@
-version: 1
-
-release:
-  labels:
-    - major
-    - minor
-  versioning:
-    type: semver
-    default: patch
-  changelog:
-    enabled: true
-    format: markdown
-  draft: false
-  prerelease: false
+[tagpr]
+	vPrefix = true
+	releaseBranch = main
+	versionFile = -
+	majorLabels = major
+	minorLabels = minor
