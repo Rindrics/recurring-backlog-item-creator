@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.0.2](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v1.0.1...v1.0.2) - 2025-11-09
+- Fix `README.md` by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/47
+
 ## [v1.0.1](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v1.0.0...v1.0.1) - 2025-11-09
 - Fix syntax of notes in `.md` by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/45
 
