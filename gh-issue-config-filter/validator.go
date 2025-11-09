@@ -50,6 +50,11 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 	projectName, err := ghClient.GetProjectName(ctx, projectID)
 	if err != nil {
 		// Fallback to project ID if name cannot be retrieved
+		Debugf("Failed to get project name for %s: %v, using project ID as fallback", projectID, err)
+		projectName = projectID
+	} else if projectName == "" {
+		// If project name is empty, use project ID as fallback
+		Debugf("Project name is empty for %s, using project ID as fallback", projectID)
 		projectName = projectID
 	}
 
@@ -67,13 +72,17 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 	}
 
 	// Validate fields
-	if err := ValidateIssueFields(issue, fieldMap, projectName); err != nil {
+	projectDisplayName := projectName
+	if projectDisplayName != projectID {
+		projectDisplayName = fmt.Sprintf("%s (%s)", projectName, projectID)
+	}
+	if err := ValidateIssueFields(issue, fieldMap, projectDisplayName); err != nil {
 		// Log available fields for debugging
 		availableFields := make([]string, 0, len(fieldMap))
 		for name := range fieldMap {
 			availableFields = append(availableFields, name)
 		}
-		Debugf("Available fields in project '%s': %v", projectName, availableFields)
+		Debugf("Available fields in project '%s': %v", projectDisplayName, availableFields)
 		return err
 	}
 
