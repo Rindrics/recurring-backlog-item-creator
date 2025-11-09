@@ -1,5 +1,3 @@
-# Wash My Cat
-
 ## Description
 
 Monthly task to wash the cat.

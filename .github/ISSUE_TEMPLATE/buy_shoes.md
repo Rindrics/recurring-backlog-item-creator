@@ -1,5 +1,3 @@
-# Buy New Shoes
-
 ## Description
 
 Time to buy new shoes for the season.

@@ -20,3 +20,11 @@ issues:
       Status: "Backlog"
     project_id: "PVT_kwHOAOKHl84BHgin"  # you can override the default project_id
     target_repo: "Rindrics/recurring-backlog-item-creator"  # you can override the default target_repo
+  - name: "Review Documentation"
+    template_file: ".github/ISSUE_TEMPLATE/review_documentation.md"
+    title_prefix: "[DOC]"
+    title_suffix: " - {{Month}}"
+    creation_months: [2, 5, 8, 11]
+    fields:
+      Priority: "P3"
+      Status: "Backlog"
