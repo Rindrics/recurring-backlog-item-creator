@@ -138,18 +138,25 @@ func (g *githubClient) GetProjectFields(ctx context.Context, projectID string, o
 		defer resp.Body.Close()
 
 		Debugf("GraphQL response status: %d", resp.StatusCode)
-		
+
 		// Check for GraphQL errors
 		if len(result.Errors) > 0 {
 			errorMessages := make([]string, 0, len(result.Errors))
 			for _, err := range result.Errors {
 				errorMessages = append(errorMessages, fmt.Sprintf("%s: %s", err.Type, err.Message))
+				Debugf("GraphQL error: %s - %s", err.Type, err.Message)
+			}
+			// Provide more helpful error message for NOT_FOUND errors
+			for _, err := range result.Errors {
+				if err.Type == "NOT_FOUND" {
+					return nil, fmt.Errorf("project not found (ID: %s). This may indicate: 1) The project ID is incorrect, 2) The token doesn't have access to this project, or 3) The project belongs to a different organization/user. GraphQL error: %s", projectID, err.Message)
+				}
 			}
 			return nil, fmt.Errorf("GraphQL errors: %v", errorMessages)
 		}
 
-		Debugf("GraphQL response - hasNextPage: %v, endCursor: %s, nodes count: %d", 
-			result.Data.Node.Fields.PageInfo.HasNextPage, 
+		Debugf("GraphQL response - hasNextPage: %v, endCursor: %s, nodes count: %d",
+			result.Data.Node.Fields.PageInfo.HasNextPage,
 			result.Data.Node.Fields.PageInfo.EndCursor,
 			len(result.Data.Node.Fields.Nodes))
 

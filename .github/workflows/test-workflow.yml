@@ -15,15 +15,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: actions/create-github-app-token@v2
-        id: generate-token
-        with:
-          app-id: ${{ vars.APP_ID_GITHUB_APP }}
-          private-key: ${{ secrets.PRIVATE_KEY_GITHUB_APP }}
-
       - name: Create recurring backlog items
         uses: Rindrics/recurring-backlog-item-creator@latest
         with:
           config: 'config-template.yml'
-          token: ${{ steps.generate-token.outputs.token }}
-
+          token: ${{ secrets.PAT }}

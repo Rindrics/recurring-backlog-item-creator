@@ -27,7 +27,6 @@ runs:
       run: make build
 
     - name: Filter issues
-      id: filter
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
@@ -46,14 +45,13 @@ runs:
         }
         echo "Filtered issues JSON:"
         cat issues.json
-        echo "issues=$(cat issues.json)" >> $GITHUB_OUTPUT
 
     - name: Create issues and register to projects
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
-        echo '${{ steps.filter.outputs.issues }}' | jq -c '.[]' | while read issue; do
+        cat issues.json | jq -c '.[]' | while read issue; do
           TEMPLATE=$(echo $issue | jq -r '.template_file')
           TITLE=$(echo $issue | jq -r '.title')
           PROJECT_ID=$(echo $issue | jq -r '.project_id')

@@ -48,23 +48,53 @@ If you want to use a default project ID for all issues, set the following reposi
 
 ### 3. Configure GitHub Token Permissions
 
-The GitHub token (`GITHUB_TOKEN` or a custom token) requires the following permissions:
+The GitHub token requires different permissions depending on the project type. GitHub Projects v2 supports two types of projects:
 
-- **`issues: write`** - Required to create issues in the repository
-- **`repository-projects: write`** - Required to add issues to projects and update project fields (includes read access)
-- **`contents: read`** - Required to read the configuration file from the repository
+1. **Organization Projects** - Projects associated with an organization
+2. **User Projects** - Projects associated with a user account
 
-When using `GITHUB_TOKEN` in GitHub Actions, these permissions must be explicitly granted in your workflow file:
+#### For Organization Projects
 
-```yaml
-permissions:
-  contents: read
-  issues: write
-  repository-projects: write
-```
+For organization-level projects, you have two options:
+
+1. **Use a GitHub App** (recommended for organization projects):
+   - Create a GitHub App with the following permissions:
+     - Repository permissions
+       - Contents: `read`（to read config file）
+       - Issues: `write` (to create issue)
+     - Organization permissions
+       - Project: `write` (to add issue to project)
+   - Install the app on your organization
+   - Use the app's token in your workflow
+
+2. **Use a Personal Access Token (PAT)**:
+   - Create a PAT (classic) with the following scopes:
+     - `repo` (to create issue)
+     - `project` (to add issue to project)
+   - Add it as a repository secret and use it in your workflow
 
 > [NOTE]
-> If you're using a Personal Access Token (PAT) or a custom token, ensure it has the `repo` scope (for private repositories) or `public_repo` scope (for public repositories), which includes the necessary permissions.
+> `GITHUB_TOKEN` cannot access organization-level projects because it only has repository scope.
+
+#### For User Projects
+
+For user-level projects, you **must use a Personal Access Token (PAT)**. The PAT requires the following scopes:
+   - `repo` (to create issue)
+   - `project` (to add issue to project)
+
+#### Using a PAT in Your Workflow
+
+1. Create a PAT (classic) with the required scopes
+2. Add it as a repository secret (e.g., `PAT_TOKEN`)
+3. Use it in your workflow:
+
+```yaml
+- name: Create recurring backlog items
+  uses: Rindrics/recurring-backlog-item-creator@latest
+  with:
+    token: ${{ secrets.PAT_TOKEN }}
+    config: '.recurrent-backlog-items.yml'
+```
 
 ### 4. Create GitHub Actions workflow
 
