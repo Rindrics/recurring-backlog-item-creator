@@ -1,5 +1,8 @@
 # Changelog
 
+## [v1.0.0](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v0.2.0...v1.0.0) - 2025-11-09
+- Remove debug option by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/43
+
 ## [v0.2.0](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v0.1.3...v0.2.0) - 2025-11-09
 - Add title_prefix funtcion by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/35
 - Add sample issue by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/38
