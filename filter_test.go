@@ -10,9 +10,6 @@ func TestGetIssuesToCreate(t *testing.T) {
 		TargetRepo: "default/repo",
 	}
 
-	stringPtr := func(s string) *string {
-		return &s
-	}
 	issue1 := Issue{
 		Name:           "Issue 1",
 		CreationMonths: []Month{January},
