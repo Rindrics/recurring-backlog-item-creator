@@ -27,4 +27,4 @@ issues:
     creation_months: [2, 5, 8, 11]
     fields:
       Priority: "P0"
-      Status: "Backlog"
+      Status: "Ready"
