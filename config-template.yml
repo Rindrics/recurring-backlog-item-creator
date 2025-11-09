@@ -12,7 +12,7 @@ issues:
   - name: "Buy New Shoes"
     template_file: ".github/ISSUE_TEMPLATE/buy_shoes.md"
     title_suffix: "- $(date +%Y)"
-    creation_months: [12]
+    creation_months: [3, 12]
     fields:
       priority: "2"
       status: "Backlog"
