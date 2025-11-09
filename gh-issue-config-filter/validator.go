@@ -45,8 +45,15 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 		projectID = *issue.ProjectID
 	}
 
-	// Get project fields for validation
+	// Get project name for error messages
 	ctx := context.Background()
+	projectName, err := ghClient.GetProjectName(ctx, projectID)
+	if err != nil {
+		// Fallback to project ID if name cannot be retrieved
+		projectName = projectID
+	}
+
+	// Get project fields for validation
 	projectFields, err := ghClient.GetProjectFields(ctx, projectID, issueRepo.Owner)
 	if err != nil {
 		return fmt.Errorf("failed to get project fields: %w", err)
@@ -56,10 +63,17 @@ func ValidateIssueWithProject(issue Issue, defaults Defaults, ghClient GitHubCli
 	fieldMap := make(map[string]ProjectField)
 	for _, field := range projectFields {
 		fieldMap[field.Name] = field
+		Debugf("Found project field: %s (ID: %s, Type: %s)", field.Name, field.ID, field.DataType)
 	}
 
 	// Validate fields
-	if err := ValidateIssueFields(issue, fieldMap, projectID); err != nil {
+	if err := ValidateIssueFields(issue, fieldMap, projectName); err != nil {
+		// Log available fields for debugging
+		availableFields := make([]string, 0, len(fieldMap))
+		for name := range fieldMap {
+			availableFields = append(availableFields, name)
+		}
+		Debugf("Available fields in project '%s': %v", projectName, availableFields)
 		return err
 	}
 
@@ -86,11 +100,12 @@ func ValidateIssue(issue Issue) error {
 	return nil
 }
 
-func ValidateIssueFields(issue Issue, fieldMap map[string]ProjectField, projectID string) error {
+func ValidateIssueFields(issue Issue, fieldMap map[string]ProjectField, projectName string) error {
 	for fieldName, fieldValue := range issue.Fields {
+		Debugf("Validating field '%s' with value '%s'", fieldName, fieldValue)
 		field, exists := fieldMap[fieldName]
 		if !exists {
-			return fmt.Errorf("field '%s' does not exist in project %s", fieldName, projectID)
+			return fmt.Errorf("field '%s' does not exist in project '%s'", fieldName, projectName)
 		}
 
 		// For single-select fields, validate that the option exists
