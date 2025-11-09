@@ -59,23 +59,40 @@ runs:
           
           echo "Creating issue: $TITLE"
           
-          # Create issue
-          ISSUE_URL=$(gh issue create \
-            --title "$TITLE" \
-            --body-file "$TEMPLATE" \
-            --repo "$TARGET_REPO" \
-            --json url --jq '.url')
+          # Read template body
+          TEMPLATE_BODY=$(cat "$TEMPLATE")
           
-          echo "Created: $ISSUE_URL"
+          # Create issue using GitHub API
+          ISSUE_RESPONSE=$(gh api repos/$TARGET_REPO/issues \
+            -X POST \
+            -f title="$TITLE" \
+            -f body="$TEMPLATE_BODY" \
+            --jq '.html_url')
           
-          # Add to project
+          echo "Created: $ISSUE_RESPONSE"
+          ISSUE_URL="$ISSUE_RESPONSE"
+          
+          sleep 2  # Rate limit protection
+
+          # Extract issue number from URL (format: https://github.com/owner/repo/issues/123)
+          ISSUE_NUMBER=$(echo "$ISSUE_URL" | sed 's/.*\/issues\/\([0-9]*\).*/\1/')
           REPO_OWNER=$(echo "$TARGET_REPO" | cut -d'/' -f1)
-          ITEM_ID=$(gh project item-add "$PROJECT_ID" \
-            --owner "$REPO_OWNER" \
-            --url "$ISSUE_URL" \
-            --format json | jq -r '.id')
+          REPO_NAME=$(echo "$TARGET_REPO" | cut -d'/' -f2)
           
-          # Set fields
+          # Add to project using GraphQL API
+          ITEM_ID=$(gh api graphql -f query='
+            mutation($projectId: ID!, $contentId: ID!) {
+              addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+                item {
+                  id
+                }
+              }
+            }
+          ' -f projectId="$PROJECT_ID" -f contentId="$(gh api repos/$TARGET_REPO/issues/$ISSUE_NUMBER --jq '.node_id')" --jq '.data.addProjectV2ItemById.item.id')
+          
+          echo "Added to project. Item ID: $ITEM_ID"
+          
+          # Set fields using GraphQL API
           # Process each element in field_updates array
           echo "$issue" | jq -c '.field_updates[]?' | while read field_update; do
             FIELD_ID=$(echo "$field_update" | jq -r '.field_id')
@@ -85,19 +102,41 @@ runs:
             
             case "$FIELD_TYPE" in
               "TEXT"|"NUMBER")
-                gh project item-edit \
-                  --id "$ITEM_ID" \
-                  --project-id "$PROJECT_ID" \
-                  --field-id "$FIELD_ID" \
-                  --text "$VALUE"
+                if [ -n "$VALUE" ]; then
+                  gh api graphql -f query='
+                    mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $value: String!) {
+                      updateProjectV2ItemFieldValue(input: {
+                        projectId: $projectId
+                        itemId: $itemId
+                        fieldId: $fieldId
+                        value: { text: $value }
+                      }) {
+                        projectV2Item {
+                          id
+                        }
+                      }
+                    }
+                  ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$FIELD_ID" -f value="$VALUE" > /dev/null
+                  echo "Set field $FIELD_ID to $VALUE"
+                fi
                 ;;
               "SINGLE_SELECT")
                 if [ -n "$OPTION_ID" ]; then
-                  gh project item-edit \
-                    --id "$ITEM_ID" \
-                    --project-id "$PROJECT_ID" \
-                    --field-id "$FIELD_ID" \
-                    --single-select-option-id "$OPTION_ID"
+                  gh api graphql -f query='
+                    mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                      updateProjectV2ItemFieldValue(input: {
+                        projectId: $projectId
+                        itemId: $itemId
+                        fieldId: $fieldId
+                        value: { singleSelectOptionId: $optionId }
+                      }) {
+                        projectV2Item {
+                          id
+                        }
+                      }
+                    }
+                  ' -f projectId="$PROJECT_ID" -f itemId="$ITEM_ID" -f fieldId="$FIELD_ID" -f optionId="$OPTION_ID" > /dev/null
+                  echo "Set field $FIELD_ID to option $OPTION_ID"
                 fi
                 ;;
             esac
