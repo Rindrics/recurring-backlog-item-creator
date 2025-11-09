@@ -46,7 +46,27 @@ If you want to use a default project ID for all issues, set the following reposi
 > You don't need to set IDs of project item fields (like Story Points, Status) manually
 > because they are automatically detected from field names in your configuration file
 
-### 3. Create GitHub Actions workflow
+### 3. Configure GitHub Token Permissions
+
+The GitHub token (`GITHUB_TOKEN` or a custom token) requires the following permissions:
+
+- **`issues: write`** - Required to create issues in the repository
+- **`projects: write`** - Required to add issues to projects and update project fields
+- **`contents: read`** - Required to read the configuration file from the repository
+
+When using `GITHUB_TOKEN` in GitHub Actions, these permissions must be explicitly granted in your workflow file:
+
+```yaml
+permissions:
+  contents: read
+  issues: write
+  projects: write
+```
+
+> [NOTE]
+> If you're using a Personal Access Token (PAT) or a custom token, ensure it has the `repo` scope (for private repositories) or `public_repo` scope (for public repositories), which includes the necessary permissions.
+
+### 4. Create GitHub Actions workflow
 
 Create `.github/workflows/create-monthly-issues.yml`:
 
