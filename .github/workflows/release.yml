@@ -35,6 +35,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           # Fetch all tags
           git fetch --tags
           
@@ -54,6 +58,9 @@ jobs:
           
           # Create new latest tag pointing to the latest version
           git tag -f latest "$LATEST_VERSION_TAG"
+          
+          # Push using the token
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git push origin latest --force
           
           echo "Updated latest tag to point to $LATEST_VERSION_TAG"
