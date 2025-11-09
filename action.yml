@@ -33,7 +33,19 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
       run: |
         MONTH=$(date +%m | sed 's/^0//')
-        ./gh-issue-config-filter/bin/gh-issue-config-filter --month $MONTH --config "${{ inputs.config }}" > issues.json
+        ./gh-issue-config-filter/bin/gh-issue-config-filter --month $MONTH --config "${{ inputs.config }}" --debug > issues_with_debug.json 2>&1 || {
+          echo "Filter tool failed. Full output:"
+          cat issues_with_debug.json
+          exit 1
+        }
+        # Extract JSON from output (skip debug logs that start with [DEBUG] or timestamps)
+        grep -v "^\[DEBUG\]" issues_with_debug.json | grep -v "^2025/" > issues.json || {
+          echo "Failed to extract JSON. Full output:"
+          cat issues_with_debug.json
+          exit 1
+        }
+        echo "Filtered issues JSON:"
+        cat issues.json
         echo "issues=$(cat issues.json)" >> $GITHUB_OUTPUT
 
     - name: Create issues and register to projects

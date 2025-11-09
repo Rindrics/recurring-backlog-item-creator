@@ -117,6 +117,10 @@ func (g *githubClient) GetProjectFields(ctx context.Context, projectID string, o
 					} `json:"fields"`
 				} `json:"node"`
 			} `json:"data"`
+			Errors []struct {
+				Message string `json:"message"`
+				Type    string `json:"type"`
+			} `json:"errors,omitempty"`
 		}
 
 		req, err := g.client.NewRequest("POST", "/graphql", map[string]interface{}{
@@ -127,9 +131,32 @@ func (g *githubClient) GetProjectFields(ctx context.Context, projectID string, o
 			return nil, fmt.Errorf("failed to create GraphQL request: %w", err)
 		}
 
-		_, err = g.client.Do(ctx, req, &result)
+		resp, err := g.client.Do(ctx, req, &result)
 		if err != nil {
 			return nil, fmt.Errorf("failed to execute GraphQL query: %w", err)
+		}
+		defer resp.Body.Close()
+
+		Debugf("GraphQL response status: %d", resp.StatusCode)
+		
+		// Check for GraphQL errors
+		if len(result.Errors) > 0 {
+			errorMessages := make([]string, 0, len(result.Errors))
+			for _, err := range result.Errors {
+				errorMessages = append(errorMessages, fmt.Sprintf("%s: %s", err.Type, err.Message))
+			}
+			return nil, fmt.Errorf("GraphQL errors: %v", errorMessages)
+		}
+
+		Debugf("GraphQL response - hasNextPage: %v, endCursor: %s, nodes count: %d", 
+			result.Data.Node.Fields.PageInfo.HasNextPage, 
+			result.Data.Node.Fields.PageInfo.EndCursor,
+			len(result.Data.Node.Fields.Nodes))
+
+		if len(result.Data.Node.Fields.Nodes) == 0 && cursor == "" {
+			// First page is empty - this might indicate a permissions issue
+			Debugf("Warning: No fields found in first page. This might indicate a permissions issue or the project has no custom fields.")
+			Debugf("Project ID: %s, Owner: %s", projectID, owner)
 		}
 
 		for _, node := range result.Data.Node.Fields.Nodes {
