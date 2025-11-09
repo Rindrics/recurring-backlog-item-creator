@@ -20,7 +20,7 @@ build:
 ## demo: Run the binary
 demo: build
 	@echo "Running $(BINARY_NAME)..."
-	@$(BUILD_DIR)/$(BINARY_NAME) --month 1 --config ../config-template.yml
+	@GITHUB_TOKEN=$$(gh auth token) $(BUILD_DIR)/$(BINARY_NAME) --month 1 --config ../config-template.yml
 	@echo "Demo complete"
 
 ## test: Run tests

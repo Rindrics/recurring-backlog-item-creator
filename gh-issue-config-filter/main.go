@@ -35,7 +35,13 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	if err := ValidateConfig(config); err != nil {
+	// Create GitHub client for validation
+	ghClient, err := NewGitHubClient()
+	if err != nil {
+		log.Fatalf("failed to create GitHub client: %v", err)
+	}
+
+	if err := ValidateConfig(config, ghClient); err != nil {
 		log.Fatalf("config validation failed: %v", err)
 	}
 
