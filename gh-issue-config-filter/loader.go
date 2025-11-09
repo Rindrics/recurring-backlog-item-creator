@@ -9,6 +9,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+func ParseRepo(repoStr string) (Repo, error) {
+	parts := strings.Split(repoStr, "/")
+	if len(parts) != 2 {
+		return Repo{}, fmt.Errorf("invalid repository format: %s (expected 'owner/repo')", repoStr)
+	}
+	if parts[0] == "" || parts[1] == "" {
+		return Repo{}, fmt.Errorf("invalid repository format: %s (owner and repo must not be empty)", repoStr)
+	}
+	return Repo{
+		Owner: parts[0],
+		Name:  parts[1],
+	}, nil
+}
+
 func LoadConfig(configFile string) (Config, error) {
 	Debug("loading config file: ", configFile)
 

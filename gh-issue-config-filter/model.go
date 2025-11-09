@@ -1,13 +1,19 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"reflect"
 	"slices"
 )
 
 type Defaults struct {
 	ProjectID  string `yaml:"project_id"`
-	TargetRepo string `yaml:"target_repo"`
+	TargetRepo string `yaml:"target_repo"` // Format: "owner/repo"
+}
+
+func (d Defaults) GetTargetRepo() (Repo, error) {
+	return ParseRepo(d.TargetRepo)
 }
 
 type Config struct {
@@ -32,6 +38,25 @@ const (
 	December  Month = 12
 )
 
+type Repo struct {
+	Owner string
+	Name  string
+}
+
+func (r Repo) String() string {
+	return fmt.Sprintf("%s/%s", r.Owner, r.Name)
+}
+
+func (r Repo) Validate() error {
+	if r.Owner == "" {
+		return errors.New("repository owner is required")
+	}
+	if r.Name == "" {
+		return errors.New("repository name is required")
+	}
+	return nil
+}
+
 type Issue struct {
 	Name           string            `yaml:"name"`
 	CreationMonths []Month           `yaml:"creation_months"`
@@ -39,7 +64,14 @@ type Issue struct {
 	TitleSuffix    *string           `yaml:"title_suffix,omitempty"`
 	Fields         map[string]string `yaml:"fields"`
 	ProjectID      *string           `yaml:"project_id,omitempty"`
-	TargetRepo     *string           `yaml:"target_repo,omitempty"`
+	TargetRepo     *string           `yaml:"target_repo,omitempty"` // Format: "owner/repo"
+}
+
+func (i Issue) GetTargetRepo(defaults Defaults) (Repo, error) {
+	if i.TargetRepo != nil {
+		return ParseRepo(*i.TargetRepo)
+	}
+	return defaults.GetTargetRepo()
 }
 
 type IssueToCreate = Issue
