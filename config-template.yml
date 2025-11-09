@@ -1,6 +1,6 @@
 defaults:
   project_id: "PVT_kwHOAOKHl84BHgin"
-  target_repo: "Rindrics/gh-issue-config-filter"
+  target_repo: "Rindrics/recurring-backlog-item-creator"
 issues:
   - name: "Wash My Cat"
     template_file: ".github/ISSUE_TEMPLATE/wash_my_cat.md"
@@ -17,4 +17,4 @@ issues:
       Priority: "P2"
       Status: "Backlog"
     project_id: "PVT_kwHOAOKHl84BHgin"  # you can override the default project_id
-    target_repo: "other/repo"
+    target_repo: "Rindrics/recurring-backlog-item-creator"  # you can override the default target_repo
