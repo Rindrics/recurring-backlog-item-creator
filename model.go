@@ -47,18 +47,14 @@ type IssueToCreate struct {
 }
 
 func NewIssueToCreate(issue Issue, defaults Defaults) IssueToCreate {
-	issueToCreate := IssueToCreate{Issue: issue}
+	issueToCreate := issue
 
-	if issue.ProjectID != nil {
-		issueToCreate.ProjectID = issue.ProjectID
-	} else {
+	if issue.ProjectID == nil {
 		projectID := defaults.ProjectID
 		issueToCreate.ProjectID = &projectID
 	}
 
-	if issue.TargetRepo != nil {
-		issueToCreate.TargetRepo = issue.TargetRepo
-	} else {
+	if issue.TargetRepo == nil {
 		targetRepo := defaults.TargetRepo
 		issueToCreate.TargetRepo = &targetRepo
 	}

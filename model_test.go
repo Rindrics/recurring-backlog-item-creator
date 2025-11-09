@@ -75,3 +75,26 @@ func TestIssue_IsCreationMonth(t *testing.T) {
 		})
 	}
 }
+
+func TestNewIssueToCreate(t *testing.T) {
+	defaults := Defaults{
+		ProjectID:  "default_project_id",
+		TargetRepo: "default/repo",
+	}
+	issue := Issue{
+		Name: "test",
+	}
+	issueToCreate := NewIssueToCreate(issue, defaults)
+
+	if issueToCreate.ProjectID == nil {
+		t.Errorf("expected ProjectID to be set, got nil")
+	} else if *issueToCreate.ProjectID != "default_project_id" {
+		t.Errorf("expected ProjectID to be %q, got %q", "default_project_id", *issueToCreate.ProjectID)
+	}
+
+	if issueToCreate.TargetRepo == nil {
+		t.Errorf("expected TargetRepo to be set, got nil")
+	} else if *issueToCreate.TargetRepo != "default/repo" {
+		t.Errorf("expected TargetRepo to be %q, got %q", "default/repo", *issueToCreate.TargetRepo)
+	}
+}
