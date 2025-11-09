@@ -31,22 +31,16 @@ See [`gh-issue-config-filter/README.md`](./gh-issue-config-filter/README.md) for
 
 ## Setup
 
-### 1. Create a configuration file
+### Create a configuration file
 
 Create a YAML configuration file in your repository.
 See [`config-template.yml`](./config-template.yml) for an example.
-
-### 2. Configure GitHub Variables (Optional)
-
-If you want to use a default project ID for all issues, set the following repository variable:
-
-- `PROJECT_ID`: Your GitHub Project ID (can be overridden per issue in config)
 
 > [!NOTE]
 > You don't need to set IDs of project item fields (like Story Points, Status) manually
 > because they are automatically detected from field names in your configuration file
 
-### 3. Configure GitHub Token Permissions
+### Configure GitHub Token Permissions
 
 The GitHub token requires different permissions depending on the project type. GitHub Projects v2 supports two types of projects:
 
@@ -96,7 +90,7 @@ For user-level projects, you **must use a Personal Access Token (PAT)**. The PAT
     config: '.recurrent-backlog-items.yml'
 ```
 
-### 4. Create GitHub Actions workflow
+### Create GitHub Actions workflow
 
 Create `.github/workflows/create-monthly-issues.yml`:
 
@@ -197,14 +191,6 @@ issues:
       Priority: "Medium"
       Status: "Backlog"
 ```
-
-### GITHUB_TOKEN Permission Errors
-
-Ensure your workflow has the required permissions:
-
-- `contents: read` - To read the configuration file
-- `issues: write` - To create issues
-- `repository-projects: write` - To add issues to projects and update fields
 
 ## License
 
