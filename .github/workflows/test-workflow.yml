@@ -19,4 +19,5 @@ jobs:
         uses: Rindrics/recurring-backlog-item-creator@latest
         with:
           config: 'config-template.yml'
+          token: ${{ secrets.GITHUB_TOKEN }}
 

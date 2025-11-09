@@ -5,6 +5,9 @@ branding:
   color: 'blue'
 
 inputs:
+  token:
+    description: 'GitHub token with appropriate permissions'
+    required: true
   config:
     description: 'Path to the YAML configuration file'
     required: true
