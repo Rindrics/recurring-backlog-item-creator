@@ -10,7 +10,6 @@ import (
 func main() {
 	var (
 		month      = flag.Int("month", 0, "Month (1-12) to filter issues")
-		output     = flag.String("output", "json", "Output format (json)")
 		configFile = flag.String("config", "config.yaml", "Path to config file")
 		debug      = flag.Bool("debug", false, "Enable debug logging")
 	)
@@ -34,13 +33,8 @@ func main() {
 
 	issuesToCreate := GetIssuesToCreate(config, monthEnum)
 
-	switch *output {
-	case "json":
-		if err := outputJSON(issuesToCreate); err != nil {
-			log.Fatalf("failed to output JSON: %v", err)
-		}
-	default:
-		log.Fatalf("unsupported output format: %s", *output)
+	if err := outputJSON(issuesToCreate); err != nil {
+		log.Fatalf("failed to output JSON: %v", err)
 	}
 }
 
