@@ -1,0 +1,165 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+
+	"github.com/google/go-github/v62/github"
+)
+
+type GitHubClient interface {
+	GetProjectFields(ctx context.Context, projectID string, owner string) ([]ProjectField, error)
+}
+
+type ProjectField struct {
+	ID       string
+	Name     string
+	DataType string
+	Options  []ProjectFieldOption
+}
+
+type ProjectFieldOption struct {
+	ID   string
+	Name string
+}
+
+type githubClient struct {
+	client *github.Client
+}
+
+func NewGitHubClient() (GitHubClient, error) {
+	token := os.Getenv("GITHUB_TOKEN")
+	if token == "" {
+		return nil, fmt.Errorf("GITHUB_TOKEN environment variable is required")
+	}
+
+	httpClient := &http.Client{
+		Transport: &tokenTransport{
+			token: token,
+		},
+	}
+
+	client := github.NewClient(httpClient)
+	return &githubClient{client: client}, nil
+}
+
+type tokenTransport struct {
+	token string
+}
+
+func (t *tokenTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", t.token))
+	return http.DefaultTransport.RoundTrip(req)
+}
+
+func (g *githubClient) GetProjectFields(ctx context.Context, projectID string, owner string) ([]ProjectField, error) {
+	var allFields []ProjectField
+	cursor := ""
+	hasNextPage := true
+
+	for hasNextPage {
+		query := fmt.Sprintf(`
+			query($cursor: String) {
+				node(id: "%s") {
+					... on ProjectV2 {
+						fields(first: 100, after: $cursor) {
+							pageInfo {
+								hasNextPage
+								endCursor
+							}
+							nodes {
+								... on ProjectV2Field {
+									id
+									name
+									dataType
+								}
+								... on ProjectV2SingleSelectField {
+									id
+									name
+									dataType
+									options {
+										id
+										name
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		`, projectID)
+
+		variables := map[string]interface{}{}
+		if cursor != "" {
+			variables["cursor"] = cursor
+		}
+
+		var result struct {
+			Data struct {
+				Node struct {
+					Fields struct {
+						PageInfo struct {
+							HasNextPage bool   `json:"hasNextPage"`
+							EndCursor   string `json:"endCursor"`
+						} `json:"pageInfo"`
+						Nodes []struct {
+							ID       string `json:"id"`
+							Name     string `json:"name"`
+							DataType string `json:"dataType"`
+							Options  []struct {
+								ID   string `json:"id"`
+								Name string `json:"name"`
+							} `json:"options,omitempty"`
+						} `json:"nodes"`
+					} `json:"fields"`
+				} `json:"node"`
+			} `json:"data"`
+		}
+
+		req, err := g.client.NewRequest("POST", "/graphql", map[string]interface{}{
+			"query":     query,
+			"variables": variables,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to create GraphQL request: %w", err)
+		}
+
+		_, err = g.client.Do(ctx, req, &result)
+		if err != nil {
+			return nil, fmt.Errorf("failed to execute GraphQL query: %w", err)
+		}
+
+		for _, node := range result.Data.Node.Fields.Nodes {
+			field := ProjectField{
+				ID:       node.ID,
+				Name:     node.Name,
+				DataType: node.DataType,
+			}
+
+			// Add options for single-select fields
+			if len(node.Options) > 0 {
+				field.Options = make([]ProjectFieldOption, 0, len(node.Options))
+				for _, opt := range node.Options {
+					field.Options = append(field.Options, ProjectFieldOption{
+						ID:   opt.ID,
+						Name: opt.Name,
+					})
+				}
+			}
+
+			allFields = append(allFields, field)
+		}
+
+		hasNextPage = result.Data.Node.Fields.PageInfo.HasNextPage
+		cursor = result.Data.Node.Fields.PageInfo.EndCursor
+	}
+
+	return allFields, nil
+}
+
+func NewGitHubClientWithHTTPClient(httpClient *http.Client) GitHubClient {
+	client := github.NewClient(httpClient)
+	return &githubClient{client: client}
+}
