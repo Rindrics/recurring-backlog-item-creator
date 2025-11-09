@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.1.0](https://github.com/Rindrics/recurring-backlog-item-creator/compare/v0.0.1...v0.1.0) - 2025-11-09
+- Provide as GitHub Action by @Rindrics in https://github.com/Rindrics/recurring-backlog-item-creator/pull/7
+
 ## [v0.0.1](https://github.com/Rindrics/gh-issue-config-filter/commits/v0.0.1) - 2025-11-09
 - Automate release using `tagpr` by @Rindrics in https://github.com/Rindrics/gh-issue-config-filter/pull/1
 - Pass GitHub token by @Rindrics in https://github.com/Rindrics/gh-issue-config-filter/pull/2
